@@ -3220,6 +3220,14 @@ def get_user_exploration_data(
         )
     )
 
+    last_updated = exploration.last_updated
+    if (
+        exp_user_data and
+        exp_user_data.draft_change_list_last_updated and
+        exp_user_data.draft_change_list_last_updated > last_updated
+    ):
+        last_updated = exp_user_data.draft_change_list_last_updated
+
     editor_dict: UserExplorationDataDict = {
         'auto_tts_enabled': exploration.auto_tts_enabled,
         'category': exploration.category,
@@ -3245,6 +3253,7 @@ def get_user_exploration_data(
         'next_content_id_index': exploration.next_content_id_index,
         'edits_allowed': exploration.edits_allowed,
         'exploration_metadata': exploration.get_metadata().to_dict(),
+        'last_updated_msecs': utils.get_time_in_millisecs(last_updated),
     }
 
     return editor_dict

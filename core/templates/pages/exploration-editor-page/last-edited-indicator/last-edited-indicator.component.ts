@@ -38,10 +38,18 @@ export class LastEditedIndicatorComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.updateLastEditedText();
 
+        this.updateSubscription = new Subscription();
+
         // Update the text every minute
-        this.updateSubscription = interval(60000).subscribe(() => {
+        this.updateSubscription.add(interval(60000).subscribe(() => {
             this.updateLastEditedText();
-        });
+        }));
+
+        this.updateSubscription.add(
+            this.explorationDataService.onExplorationDataUpdated.subscribe(() => {
+                this.updateLastEditedText();
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -51,10 +59,12 @@ export class LastEditedIndicatorComponent implements OnInit, OnDestroy {
     }
 
     private updateLastEditedText(): void {
-        const explorationData = this.explorationDataService.getData();
+        const explorationData = this.explorationDataService.data;
 
-        if (explorationData && explorationData.last_updated) {
-            this.lastEditedText = `Last edited ${this.timeAgoService.getTimeAgo(explorationData.last_updated)}`;
+        if (explorationData && explorationData.last_updated_msecs) {
+            this.lastEditedText = `Last edited ${this.timeAgoService.getTimeAgo(
+                new Date(explorationData.last_updated_msecs)
+            )}`;
         } else {
             this.lastEditedText = '';
         }

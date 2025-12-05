@@ -87,7 +87,22 @@ def install_hook() -> None:
         ValueError. If chmod command fails.
     """
     oppia_dir = os.getcwd()
-    hooks_dir = os.path.join(oppia_dir, '.git', 'hooks')
+    
+    # Check if .git is a file (submodule) or directory
+    git_path = os.path.join(oppia_dir, '.git')
+    if os.path.isfile(git_path):
+        # Read the gitdir path from the .git file
+        with open(git_path, 'r') as f:
+            git_dir = f.read().strip().replace('gitdir: ', '')
+        if not os.path.isabs(git_dir):
+            git_dir = os.path.join(oppia_dir, git_dir)
+        hooks_dir = os.path.join(git_dir, 'hooks')
+    else:
+        hooks_dir = os.path.join(oppia_dir, '.git', 'hooks')
+    
+    # Create hooks directory if it doesn't exist
+    os.makedirs(hooks_dir, exist_ok=True)
+    
     pre_commit_file = os.path.join(hooks_dir, 'pre-commit')
     chmod_cmd = ['chmod', '+x', pre_commit_file]
     file_is_symlink = os.path.islink(pre_commit_file)

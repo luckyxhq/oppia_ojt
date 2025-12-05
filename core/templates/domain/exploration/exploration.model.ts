@@ -19,13 +19,13 @@
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import {AppConstants} from 'app.constants';
-import {LoggerService} from 'services/contextual/logger.service';
+import { AppConstants } from 'app.constants';
+import { LoggerService } from 'services/contextual/logger.service';
 import {
   ParamChangeBackendDict,
   ParamChange,
 } from 'domain/exploration/param-change.model';
-import {ParamChanges} from 'domain/exploration/param-changes.model';
+import { ParamChanges } from 'domain/exploration/param-changes.model';
 import {
   ParamSpecsBackendDict,
   ParamSpecs,
@@ -34,17 +34,17 @@ import {
   EndExplorationCustomizationArgs,
   InteractionCustomizationArgs,
 } from 'interactions/customization-args-defs';
-import {Interaction} from 'domain/exploration/interaction.model';
-import {State} from 'domain/state/state.model';
-import {StateObjectsBackendDict, States} from 'domain/exploration/states.model';
-import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
+import { Interaction } from 'domain/exploration/interaction.model';
+import { State } from 'domain/state/state.model';
+import { StateObjectsBackendDict, States } from 'domain/exploration/states.model';
+import { UrlInterpolationService } from 'domain/utilities/url-interpolation.service';
 
 import INTERACTION_SPECS from 'interactions/interaction_specs.json';
-import {InteractionSpecsKey} from 'pages/interaction-specs.constants';
-import {ExplorationChange} from './exploration-draft.model';
-import {BaseTranslatableObject} from 'domain/objects/BaseTranslatableObject.model';
-import {ExplorationMetadataBackendDict} from './exploration-metadata.model';
-import {FetchExplorationBackendResponse} from './read-only-exploration-backend-api.service';
+import { InteractionSpecsKey } from 'pages/interaction-specs.constants';
+import { ExplorationChange } from './exploration-draft.model';
+import { BaseTranslatableObject } from 'domain/objects/BaseTranslatableObject.model';
+import { ExplorationMetadataBackendDict } from './exploration-metadata.model';
+import { FetchExplorationBackendResponse } from './read-only-exploration-backend-api.service';
 
 export interface ExplorationBackendDict {
   auto_tts_enabled: boolean;
@@ -61,6 +61,7 @@ export interface ExplorationBackendDict {
   next_content_id_index: number;
   edits_allowed?: boolean;
   exploration_metadata: ExplorationMetadataBackendDict;
+  last_updated_msecs?: number;
 }
 
 export class Exploration extends BaseTranslatableObject {
@@ -167,7 +168,7 @@ export class Exploration extends BaseTranslatableObject {
     return (
       !interactionId ||
       INTERACTION_SPECS[interactionId as InteractionSpecsKey].display_mode ===
-        AppConstants.INTERACTION_DISPLAY_MODE_INLINE
+      AppConstants.INTERACTION_DISPLAY_MODE_INLINE
     );
   }
 

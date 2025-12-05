@@ -17,21 +17,21 @@
  * with the exploration editor backend.
  */
 
-import {Injectable} from '@angular/core';
-import {EditableExplorationBackendApiService} from 'domain/exploration/editable-exploration-backend-api.service';
-import {ExplorationChange} from 'domain/exploration/exploration-draft.model';
-import {ExplorationBackendDict} from 'domain/exploration/exploration.model';
+import { EventEmitter, Injectable } from '@angular/core';
+import { EditableExplorationBackendApiService } from 'domain/exploration/editable-exploration-backend-api.service';
+import { ExplorationChange } from 'domain/exploration/exploration-draft.model';
+import { ExplorationBackendDict } from 'domain/exploration/exploration.model';
 import {
   ReadOnlyExplorationBackendApiService,
   ReadOnlyExplorationBackendDict,
 } from 'domain/exploration/read-only-exploration-backend-api.service';
-import {tap} from 'rxjs/operators';
-import {AlertsService} from 'services/alerts.service';
-import {LoggerService} from 'services/contextual/logger.service';
-import {UrlService} from 'services/contextual/url.service';
-import {WindowRef} from 'services/contextual/window-ref.service';
-import {LocalStorageService} from 'services/local-storage.service';
-import {ExplorationDataBackendApiService} from './exploration-data-backend-api.service';
+import { tap } from 'rxjs/operators';
+import { AlertsService } from 'services/alerts.service';
+import { LoggerService } from 'services/contextual/logger.service';
+import { UrlService } from 'services/contextual/url.service';
+import { WindowRef } from 'services/contextual/window-ref.service';
+import { LocalStorageService } from 'services/local-storage.service';
+import { ExplorationDataBackendApiService } from './exploration-data-backend-api.service';
 
 export interface DraftAutoSaveResponse {
   draft_change_list_id: number;
@@ -51,6 +51,7 @@ export class ExplorationDataService {
   explorationId!: string;
   resolvedAnswersUrlPrefix!: string;
   data!: ExplorationBackendDict;
+  onExplorationDataUpdated = new EventEmitter<void>();
 
   constructor(
     private alertsService: AlertsService,
@@ -109,6 +110,10 @@ export class ExplorationDataService {
           // We can safely remove the locally saved draft copy if it was saved
           // to the backend.
           this.localStorageService.removeExplorationDraft(this.explorationId);
+          if (this.data) {
+            this.data.last_updated_msecs = Date.now();
+            this.onExplorationDataUpdated.emit();
+          }
         })
       )
       .toPromise();
@@ -177,7 +182,7 @@ export class ExplorationDataService {
                     this.windowRef.nativeWindow.location.reload();
                   },
                   // If the request errors out, do nothing.
-                  () => {}
+                  () => { }
                 );
               } else {
                 if (errorCallback) {
@@ -236,6 +241,7 @@ export class ExplorationDataService {
         response => {
           this.alertsService.clearWarnings();
           this.data = response;
+          this.onExplorationDataUpdated.emit();
           if (successCallback) {
             successCallback(
               response.is_version_of_draft_valid,

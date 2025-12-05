@@ -258,6 +258,7 @@ import { WindowDimensionsService } from 'services/contextual/window-dimensions.s
     TranslationTabComponent,
     ExplorationEditorPageComponent,
     StateVersionHistoryComponent,
+    LastEditedIndicatorComponent,
     ExplorationEditorPageRootComponent,
   ],
   entryComponents: [
