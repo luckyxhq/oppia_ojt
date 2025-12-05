@@ -1,0 +1,15 @@
+.last-edited-indicator {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+}
+
+.last-edited-text {
+    opacity: 0.8;
+}
+
+.last-edited-indicator:hover .last-edited-text {
+    opacity: 1;
+}
